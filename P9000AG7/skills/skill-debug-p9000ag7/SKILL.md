@@ -64,11 +64,11 @@ P9000AG7/packages/iecpack/packages/graphify-out/graph.json
 ### 先查
 
 ```bash
-rtk run "sshpass -p 'superuser' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'cat /proc/ractrends/Helper/FwInfo 2>/dev/null || true'"
+rtk run "sshpass -p '<BMC_SSH_PASSWORD>' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'cat /proc/ractrends/Helper/FwInfo 2>/dev/null || true'"
 
-rtk run "sshpass -p 'superuser' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'echo ===conf===; grep -n \"^PrimaryRMCPPort=\|^IPAddrSrc=\|^IPv4_Enable=\|^BMCGeneratedARPControl=\" /conf/BMC1/lancfg2.ini; echo ===bkupconf===; grep -n \"^PrimaryRMCPPort=\|^IPAddrSrc=\|^IPv4_Enable=\|^BMCGeneratedARPControl=\" /bkupconf/BMC1/lancfg2.ini; echo ===golden===; find /var/goldenconf /var/goldenbkupconf -name lancfg2.ini -print -exec grep -n \"^PrimaryRMCPPort=\" {} \; 2>/dev/null'"
+rtk run "sshpass -p '<BMC_SSH_PASSWORD>' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'echo ===conf===; grep -n \"^PrimaryRMCPPort=\|^IPAddrSrc=\|^IPv4_Enable=\|^BMCGeneratedARPControl=\" /conf/BMC1/lancfg2.ini; echo ===bkupconf===; grep -n \"^PrimaryRMCPPort=\|^IPAddrSrc=\|^IPv4_Enable=\|^BMCGeneratedARPControl=\" /bkupconf/BMC1/lancfg2.ini; echo ===golden===; find /var/goldenconf /var/goldenbkupconf -name lancfg2.ini -print -exec grep -n \"^PrimaryRMCPPort=\" {} \; 2>/dev/null'"
 
-rtk run "sshpass -p 'superuser' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'sed -n \"6,22p\" /conf/BMC1/LanIfccfg.ini'"
+rtk run "sshpass -p '<BMC_SSH_PASSWORD>' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'sed -n \"6,22p\" /conf/BMC1/LanIfccfg.ini'"
 ```
 
 ### 2026-06-26 定论

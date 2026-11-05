@@ -1,0 +1,12 @@
+# Current Chat Goal
+
+- 终极目标：定位并修复 P9000AG7/P9500AG7 1.07 版本 lan-over-USB (`usb0`/channel 7/RMCP 623) 不通导致带内升级失败的问题。
+- 当前主线：`lancfg3.c`/MR18961 已降级，继续查 1.07 runtime 的 lan-over-USB 建链：`IPMIMain` 初始化、`gadgetut -d eth`、configfs/UDC、`usb0`、RMCP 623、iptables、kernel/DTB/启动顺序。
+- 已排除/背景：1.06 -> 1.07 HPM 因 MID `0x00B3DD` -> `0x0019A9` 返回 1373 是已知不支持场景，不是当前要修的带内通道问题。
+- 当前证据：1.06 可用基线 `/conf/BMC1/lancfg2.ini` (`LAN3ConfigParams`) 为 `IPAddrSrc=2`、`PrimaryRMCPPort=623`、`BMCGeneratedARPControl=2`、`IPv4_Enable=1`；`LanIfccfg.ini` 映射 `usb0 -> Ethindex=2 -> Chnum=7`。
+- 已排除/降级假设：上午已验证“回退 MR18961 后 lan-over-USB 仍不通”，所以 `4814dbdd4`/`lancfg3.c` 默认值不能作为最终根因定论，只能作为需要从 build image 中确认是否已包含回退的一个检查点。
+- 当前目标：确认当前 `workspace/Build/output/rom.ima` 已包含 LAN3 默认值回退；继续从 1.07 runtime 与 kernel/DTB/启动状态定位 lan-over-USB 不通原因。
+- 已筛查：用户提供的 1.06 后 P9000AG7 合入、部分带入 P9500AG7 的 20 个 commit 已按文件和 diff 关键词静态筛查；未发现直接修改 `IPMIMain`、`gadgetut`、`libusbgadget`、`libipmilan`、`libiptables`、`lancfg`、`LanIfccfg`、`OobUpdateTool`、`InbUpdateTool` 的变更。较近的升级/网络相关变更分别是 WebUI alert、Redfish 删除任务状态清理、Redfish 签名内存释放、watchdog 升级模式、IPv6 prefix、kernel 去掉 `CONFIG_UACCESS_WITH_MEMCPY`，目前均未闭环为 lan-over-USB 根因。
+- 已做过 runtime 联调：Host OS 假 HPM 触发带内流程后枚举出 `enx5e3986bbe7c5=169.254.0.18/16`，但 Host 到 BMC `169.254.0.17` 曾 `Destination Host Unreachable`；BMC 侧 `usb0=169.254.0.17/16`、`carrier=1`、`0x32 0xab=03`、能 ping Host，ADMIN/<BMC_PASSWORD> 管理口可用。随后确认 BMC `/proc/sys/net/ipv4/conf/usb0/arp_ignore=8` 导致不响应 Host ARP；临时改 `usb0/all arp_ignore=0` 后 Host ping `169.254.0.17` 变为 0% loss，ARP 问题已验证成立。源码证据：`ArpSwitch.sh` 写 `$iface/arp_ignore`，`LANConfig.c` 中 `ARP_IGNORE_ON=8` 且 `UpdateArpStatus()` 会调用 `ArpSwitch.sh <iface> 8/0`。
+- 已做过 RMCP 后续检查：ARP 修通后 `ipmitool -I lanplus -H 169.254.0.17 -U ADMIN -P <BMC_PASSWORD> mc info` 仍曾报 `Unable to establish IPMI v2 / RMCP+ session`；BMC 侧确认 `IPMIMain` 监听 UDP 623，iptables 有 `usb0 -> 169.254.0.17` ACCEPT，并插入过 UDP 623 INPUT/OUTPUT 临时计数规则，下一步应继续判断 RMCP 请求/响应是否经过 usb0，而不是重复采集基础 `usb0/configfs/UDC`。
+- 2026-05 以后双分支筛查：按强相关路径和 diff 关键词筛过 `origin/P9000AG7`、`origin/P9500AG7`、`fix-18961`。`ArpSwitch.sh`、`LANConfig.c`、`LANIfc.c`、`IPMI_Main.c`、`gadgetut`、`libusbgadget`、`Iptables.c` 在 P9000->P9500 无 diff；强相关路径 5月后只剩 `7f911acec`（IPv6 prefix/network 显示类）和 P9500 独有 `4814dbdd4`（LAN3 默认值/MR18961）。`4814dbdd4` 强相关但已因“回退后仍不通、image 已包含回退”降级为非唯一根因；5月后未发现新的直接 lan-over-USB/ARP/RMCP 改动。

@@ -23,11 +23,11 @@ P9000AG7 已验证入口：
 
 ```text
 串口服务器：172.17.8.38
-串口服务器账号：storage / password111
+串口服务器账号：storage / <SERIAL_SERVER_PASSWORD>
 串口设备：/dev/ttyUSB7
 BMC 管理口：172.17.8.118 / 10.99.182.118
-BMC 串口账号：sysadmin / superuser
-BMC 备用串口账号：admin / ngxdcstT&byteD@2012
+BMC 串口账号：sysadmin / <BMC_SSH_PASSWORD>
+BMC 备用串口账号：admin / <BMC_SERIAL_PASSWORD>
 ```
 
 P9000AG7 官方 1.06.03 镜像示例：

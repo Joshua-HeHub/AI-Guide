@@ -72,7 +72,7 @@ CONFIG_SPX_MAP_QUARTZ_ATTR_Aux="03"
 运行态版本优先从 BMC 查询：
 
 ```bash
-rtk run "sshpass -p 'superuser' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'cat /proc/ractrends/Helper/FwInfo 2>/dev/null || true; ipmitool mc info 2>/dev/null || true'"
+rtk run "sshpass -p '<BMC_SSH_PASSWORD>' ssh -o ConnectTimeout=8 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null sysadmin@172.17.8.118 'cat /proc/ractrends/Helper/FwInfo 2>/dev/null || true; ipmitool mc info 2>/dev/null || true'"
 ```
 
 注意：OOB update 日志里的 `fw_ver` 反映目标机当时运行态，不证明 TFTP 目录当前 image 内容。

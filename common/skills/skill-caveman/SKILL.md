@@ -1,6 +1,6 @@
 ---
 name: skill-caveman
-description: 'Extremely brief communication mode. Minimizes token usage and filler words. Technical terms and code blocks remain untouched. Use when user mentions "文言", "简洁", "simple", "caveman", "brief", "极简", or "/caveman".'
+description: 'Extremely brief communication mode. Minimizes token usage and filler words. Technical terms and code blocks remain untouched. Use when user mentions "文言", "简洁", "caveman", "极简", or "/caveman".'
 ---
 
 # skill-caveman
