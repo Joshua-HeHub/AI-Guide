@@ -16,6 +16,7 @@ description: "用于 P9000AG7 单点调试和代码/配置背景分析。适用�
 | Inb tool 是否被改 | [→](#按需加载-inb-tool-是否被改) | `InbUpdate` `Incorrect username or password` `fw_update_tool` `ipmitool` |
 | Graphify / 代码背景分析 | [→](#按需加载-graphify--代码背景分析) | `Graphify` `graph.json` `docs/graphify-analysis` `sensor` `iecpack` `生成配置` `代码关系` |
 | PSU OEM AC cycle | [→](#按需加载-psu-oem-ac-cycle) | `AC cycle` `0x3e 0x25` `PSU_AC_OFF` `always-on` `AC自动恢复` |
+| 机密台账（确认机台/口令线索时加载） | [resources/pass.md](resources/pass.md) | `台账` `机密` `机台对应关系` `口令线索` `pass.md` |
 | 通用避坑 | [→](#按需加载-避坑) | `netstat :::623` `strings rom.ima` `IOCTL to get IP failed` |
 
 ## [按需加载] Graphify / 代码背景分析
@@ -164,6 +165,14 @@ ipmitool -I lanplus -H "$BMC_IP" -U "$BMC_USER" -E raw 0x3e 0x25 0xff 0xfd
 - Cycle 3：set/confirm均成功并观察到SDR超时，但Host长期保持off；`Power Restore Policy: always-on`，`Last Power Event: ac-failed`，需要一次手动power on，随后172个Sensor恢复。
 - 结论：该轮AC自动恢复为2/3，不能写成3/3 PASS。
 - 证据：`/bmc/joshua/P9000s/test/v109/test-evidence-20260904/release-1.09/ac/`。
+
+## [按需加载] 机密台账 resources/pass.md
+
+按需读取：仅当需要确认机台↔IP↔账号的对应关系或口令线索时读取 `resources/pass.md`。
+
+- 该文件是机密台账：保持 0600 权限，不写入 git，不提交、不上传公网镜像，不粘贴到聊天或日志。
+- 每次同步到新编译机时用 scp 单独传输，落盘后核验权限：`chmod 600 resources/pass.md`。
+- 台账缺失属于单机环境差异：先向文件所有者索取，禁止据此改代码或猜 口令。
 
 ## [按需加载] 避坑
 
